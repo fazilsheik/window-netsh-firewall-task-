@@ -1,0 +1,69 @@
+1. Open firewall configuration
+Windows
+GUI: Open netsh in windows 
+
+
+Netsh (Admin Command Prompt):
+
+cmd
+
+netsh advfirewall set allprofiles state on
+
+
+netsh advfirewall firewall show rule name=all
+
+3. Block inbound traffic on port 23 (Telnet)
+
+
+netsh advfirewall firewall add rule name="Block Telnet Inbound" dir=in action=block protocol=TCP localport=23
+
+## 4. Test the rule
+
+  telnet localhost 23
+or on Windows:
+
+
+Test-NetConnection -ComputerName localhost -Port 23
+
+You should see the connection refused or timed out.
+
+5. Add a rule to allow SSH (port 22) on Linux
+
+
+
+## 6. Remove the test block rule (restore original state)
+
+Netsh:
+
+netsh advfirewall firewall delete rule name="Block Telnet Inbound"
+
+
+7. Documented commands summary
+
+
+8. How firewall filters traffic – Summary
+Stateful inspection: Tracks connection states. Only initial handshake packets are checked; established connections follow internal “conntrack” rules 
+
+
+.
+
+Rule order & default behavior:
+
+In Windows, default is to block unsolicited inbound and allow outbound.
+
+In UFW, default is deny incoming, allow outgoing.
+
+Evaluation process:
+
+Incoming packet arrives.
+
+Firewall checks if it’s part of an established connection.
+
+If not, it matches rules by direction, port, protocol, IP.
+
+Takes first matching rule’s action (allow/deny).
+
+If none match, apply default policy.
+
+Allows response packets if they match related sessions (stateful).
+
